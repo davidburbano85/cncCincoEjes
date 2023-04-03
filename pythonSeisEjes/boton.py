@@ -1,0 +1,27 @@
+arrays=[]
+print('este es el array vacio: ', arrays)
+suma=2+2
+suma+=1
+arrays.append(suma)
+print(arrays)
+arrays.append(suma+1)
+print(arrays)
+arrays.append(suma+2)
+print(arrays)
+arrays.append(suma+3)
+print(arrays)
+arrays.append(suma+4)
+print(arrays)
+arrays.append(suma+5)
+print(arrays)
+arrays.append(suma+6)
+print(arrays)
+arrays.pop(0)
+print(arrays)
+
+arrays.pop(0)
+print(arrays)
+arrays.pop(0)
+print(arrays)
+arrays.delete(0)
+print(arrays)

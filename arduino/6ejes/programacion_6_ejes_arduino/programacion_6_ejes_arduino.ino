@@ -110,6 +110,8 @@ void loop() {
       break;
     case 5:
       ingresarDatosDelSerialPines();
+      estadoDelProceso = 6;
+
       break;
     case 6:
       crearPines();
@@ -161,58 +163,35 @@ void ingresarDatosDelSerialPines() {
   for (int i = 0; i < cantidadMovimientos; i++) {
 
 
-    Serial.println("ingrese el eje que desea mover:  X, Y, Z, A, B : ");
+    Serial.println("ingrese el eje que desea mover y la distancia:  X, Y, Z, A, B : ");
     while (!Serial.available()) {}
     claveEje = Serial.read();
 
     if (claveEje == 'x') {  //'' de esta manera se escoje un caracter para que si lo compare no es con ""
-      Serial.println("escogio el ejeX");
-      Serial.println("por favor escriba la distancia de el eje X");
-      while (!Serial.available()) {}
       valorEje = Serial.parseFloat();
+      while (!valorEje) {}
+
       movimientos[i].claveEje = claveEje;
       movimientos[i].valorEje = valorEje;
 
-      // Serial.print("este es el movimiento numero: ");
-      // int n = i;
-      // Serial.println(n + 1);
-      // Serial.print("con el eje:");
-      // Serial.println(movimientos[i].claveEje);
-      // Serial.print("con una distancia de:");
-      // Serial.println(movimientos[i].valorEje);
-    }
-    if (claveEje == 'y') {  //de esta manera se escoje un caracter para que si lo compare no con ""
-      Serial.println("escogio el ejeY");
-      movimientos[i].claveEje = claveEje;
-
-      Serial.println("por favor escriba la distancia de el eje Y");
-
-      while (!Serial.available()) {}
+    } else if (claveEje == 'y') {  //de esta manera se escoje un caracter para que si lo compare no con ""
       valorEje = Serial.parseFloat();
+      while (!valorEje) {}
+
+      movimientos[i].claveEje = claveEje;
       movimientos[i].valorEje = valorEje;
 
       Serial.println("por favor escriba la direccion de el eje Der:'D', Izq: 'I' ");
       while (!Serial.available()) {}
       dir = Serial.read();
       movimientos[i].dir = dir;
+      Serial.println(movimientos[i].dir);
 
-      // Serial.print("esta es la direccion: ");
-      // Serial.println(dir);
-
-
-      // Serial.println("este es el movimiento numero: ");
-      // int n = i;
-      // Serial.println(n + 1);
-      // Serial.print("con el eje:");
-      // Serial.println(movimientos[i].claveEje);
-      // Serial.print("con una distancia de:");
-      // Serial.println(movimientos[i].valorEje);
 
     } else if (claveEje == 'z') {  //de esta manera se escoje un caracter para que si lo compare no con ""
-      Serial.println("escogio el ejeZ");
-      Serial.println("por favor escriba la distancia de el eje: Z");
-      while (!Serial.available()) {}
       valorEje = Serial.parseFloat();
+      while (!valorEje) {}
+
       movimientos[i].claveEje = claveEje;
       movimientos[i].valorEje = valorEje;
 
@@ -220,20 +199,13 @@ void ingresarDatosDelSerialPines() {
       while (!Serial.available()) {}
       dir = Serial.read();
       movimientos[i].dir = dir;
+      Serial.println(movimientos[i].dir);
 
-      // Serial.print("este es el movimiento numero: ");
-      // int n = i;
-      // Serial.println(n + 1);
-      // Serial.print("con el eje:");
-      // Serial.println(movimientos[i].claveEje);
-      // Serial.print("con una distancia de:");
-      // Serial.println(movimientos[i].valorEje);
 
     } else if (claveEje == 'a') {  //de esta manera se escoje un caracter para que si lo compare no con ""
-      Serial.println("escogio el ejeA");
-      Serial.println("por favor escriba la distancia de el eje A");
-      while (!Serial.available()) {}
       valorEje = Serial.parseFloat();
+      while (!valorEje) {}
+
       movimientos[i].claveEje = claveEje;
       movimientos[i].valorEje = valorEje;
 
@@ -241,20 +213,13 @@ void ingresarDatosDelSerialPines() {
       while (!Serial.available()) {}
       dir = Serial.read();
       movimientos[i].dir = dir;
+      Serial.println(movimientos[i].dir);
 
-      // Serial.print("este es el movimiento numero: ");
-      // int n = i;
-      // Serial.println(n + 1);
-      // Serial.print("con el eje:");
-      // Serial.println(movimientos[i].claveEje);
-      // Serial.print("con una distancia de:");
-      // Serial.println(movimientos[i].valorEje);
 
     } else if (claveEje == 'b') {  //de esta manera se escoje un caracter para que si lo compare no con ""
-      Serial.println("escogio el ejeB");
-      Serial.println("por favor escriba la distancia de el eje: B");
-      while (!Serial.available()) {}
       valorEje = Serial.parseFloat();
+      while (!valorEje) {}
+
       movimientos[i].claveEje = claveEje;
       movimientos[i].valorEje = valorEje;
 
@@ -262,14 +227,8 @@ void ingresarDatosDelSerialPines() {
       while (!Serial.available()) {}
       dir = Serial.read();
       movimientos[i].dir = dir;
+      Serial.println(movimientos[i].dir);
 
-      // Serial.print("este es el movimiento numero: ");
-      // int n = i;
-      // Serial.println(n + 1);
-      // Serial.print("con el eje:");
-      // Serial.println(movimientos[i].claveEje);
-      // Serial.print("con una distancia de:");
-      // Serial.println(movimientos[i].valorEje);
 
     } else if (claveEje == 'm') {
       Serial.println("escogiste mover ejes en conjunto el eje de empuje");
@@ -283,17 +242,22 @@ void ingresarDatosDelSerialPines() {
     } else {
       Serial.println("ese eje no existe por favor elija entre: x, y, z, a, b");
     }
+
+    // Serial.println(n + 1);
+    // Serial.print("con el eje:");
+    // Serial.println(movimientos[i].claveEje);
+    // Serial.print("con una distancia de:");
+    // Serial.println(movimientos[i].valorEje);
   }
-  // for (int j = 0; j < cantidadMovimientos; j++) {
-  //   //int J = j;
+  for (int j = 0; j < cantidadMovimientos; j++) {
+    //int J = j;
 
-  //   Serial.print("esta es la clave: ");
-  //   Serial.println(movimientos[j].claveEje);
+    Serial.print("esta es la clave: ");
+    Serial.println(movimientos[j].claveEje);
 
-  //   Serial.print("este es el valor: ");
-  //   Serial.println(movimientos[j].valorEje);
-  // }
-  estadoDelProceso = 6;
+    Serial.print("este es el valor: ");
+    Serial.println(movimientos[j].valorEje);
+  }
 }
 void crearPines() {
 
@@ -303,6 +267,7 @@ void crearPines() {
 
     if (claveFor == 'x') {
       valorFor = movimientos[i].valorEje;
+      dir = movimientos[i].dir;
       int finCiclo = valorFor + 1;
 
       vueltasDeseadaspulArrastre = (pasosPorRevolucion * valorFor);
@@ -320,6 +285,7 @@ void crearPines() {
     }
     if (claveFor == 'y') {
       valorFor = movimientos[i].valorEje;
+      dir = movimientos[i].dir;
       int finCiclo = valorFor + 1;
 
       if (dir == 'D') {
@@ -349,13 +315,15 @@ void crearPines() {
     }
     if (claveFor == 'z') {
       valorFor = movimientos[i].valorEje;
+      dir = movimientos[i].dir;
+
       int finCiclo = valorFor + 1;
 
       if (dir == 'D') {
-        Serial.println("se tomo la direccion derecha en eje Y");
+        Serial.println("se tomo la direccion derecha en eje Z");
         digitalWrite(dirZ, HIGH);
       } else if (dir == 'I') {
-        Serial.println("se tomo la direccion izquierda en eje Y");
+        Serial.println("se tomo la direccion izquierda en eje Z");
         digitalWrite(dirZ, LOW);
 
       } else {
@@ -379,13 +347,15 @@ void crearPines() {
     }
     if (claveFor == 'a') {
       valorFor = movimientos[i].valorEje;
+      dir = movimientos[i].dir;
+
       int finCiclo = valorFor + 1;
 
       if (dir == 'D') {
-        Serial.println("se tomo la direccion derecha en eje Y");
+        Serial.println("se tomo la direccion derecha en eje A");
         digitalWrite(dirA, HIGH);
       } else if (dir == 'I') {
-        Serial.println("se tomo la direccion izquierda en eje Y");
+        Serial.println("se tomo la direccion izquierda en eje A");
         digitalWrite(dirA, LOW);
 
       } else {
@@ -408,13 +378,15 @@ void crearPines() {
     }
     if (claveFor == 'b') {
       valorFor = movimientos[i].valorEje;
+      dir = movimientos[i].dir;
+
       int finCiclo = valorFor + 1;
 
       if (dir == 'D') {
-        Serial.println("se tomo la direccion derecha en eje Y");
+        Serial.println("se tomo la direccion derecha en eje B");
         digitalWrite(dirB, HIGH);
       } else if (dir == 'I') {
-        Serial.println("se tomo la direccion izquierda en eje Y");
+        Serial.println("se tomo la direccion izquierda en eje B");
         digitalWrite(dirB, LOW);
 
       } else {
@@ -458,7 +430,7 @@ void ingresarDatosDelSerialResortes() {
   while (!Serial.available()) {}
   vueltasGeneralesDeseadas = Serial.parseFloat();
 
-  Serial.println("Ingrese la direccion del resorte");
+  Serial.println("Ingrese la direccion del resorte, derecha'D', izquierda 'I' ");
   while (!Serial.available()) {}
   dir = Serial.read();
 }
@@ -508,14 +480,17 @@ void darAlturaAlResorte() {
         }
         digitalWrite(dirY, HIGH);
         if (dir == 'D') {
-          Serial.println("girara a la derecha");
           digitalWrite(dirX, HIGH);
         } else if (dir == 'I') {
-          Serial.println("girara a la izquierda");
           digitalWrite(dirX, LOW);
         } else {
           Serial.println("direccion incorrecta");
         }
+      }
+      if(dir=='D'){
+        Serial.println("girara a la derecha.");
+      }else if(dir=='I'){
+        Serial.println("girara a la izquierda.");
       }
     }
     digitalWrite(dirX, LOW);
@@ -718,9 +693,9 @@ void ejecutarJoystick() {
   }
   if (claveEje == 'z') {
 
-  if (direccion==true){
+    if (direccion == true) {
       digitalWrite(dirZ, HIGH);
-    }else if(direccion== false){
+    } else if (direccion == false) {
       digitalWrite(dirZ, LOW);
     }
 
@@ -740,9 +715,9 @@ void ejecutarJoystick() {
   }
   if (claveEje == 'a') {
 
-      if (direccion==true){
+    if (direccion == true) {
       digitalWrite(dirA, HIGH);
-    }else if(direccion== false){
+    } else if (direccion == false) {
       digitalWrite(dirA, LOW);
     }
 
@@ -762,9 +737,9 @@ void ejecutarJoystick() {
   }
   if (claveEje == 'b') {
 
-  if (direccion==true){
+    if (direccion == true) {
       digitalWrite(dirB, HIGH);
-    }else if(direccion== false){
+    } else if (direccion == false) {
       digitalWrite(dirB, LOW);
     }
 
