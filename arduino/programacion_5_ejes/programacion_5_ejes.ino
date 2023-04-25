@@ -7,20 +7,20 @@
 #define pulAlturaY 4
 // #define enaY
 
-#define dirZ 11  //intercambiar pines con el eje B
-#define pulZ 10
+#define dirZ 6  //intercambiar pines con el eje B
+#define pulZ 7
 // #define enaZ
 
 #define dirA 8
 #define pulA 9
 // #define enaA
 
-#define dirB 6  //intercambiar pines con el eje z
-#define pulB 7
+#define dirB 11 //intercambiar pines con el eje z
+#define pulB 10
 // #define enaB
 
 //AQUI NOS DETERMINA LA VELOCIDAD DE CADA MOTOR MOTOR
-long intervaloDePulsos = 225;
+long intervaloDePulsos = 125;
 
 //AQUI SE DETERMINA CUANTOS PASOS SE REQUIEREN PARA DAR UNA VUELTA
 int pulsosPorRevolucion = 800;
@@ -136,12 +136,9 @@ void loop() {
       ingresarDatosDelSerialPinesZigZag();
       break;
 
-    case 11:
-      radioResorte();
-      estadoDelProceso = 12;
-      break;
 
-    case 12:
+
+    case 11:
       crearPinesZigZag();
       estadoDelProceso = 13;
       break;
@@ -190,9 +187,9 @@ void ingresarDatosDelSerialPinesZigZag() {
   while (!Serial.available()) {}
   repetirProceso = Serial.parseInt();
 
-  Serial.println("e5");  //diametro del radio
-  while (!Serial.available()) {}
-  recibeRadioResorte = Serial.parseInt();
+  // Serial.println("e5");  //diametro del radio
+  // while (!Serial.available()) {}
+  // recibeRadioResorte = Serial.parseInt();
 
   Serial.println("e1");  //cantidad movimientos solo para el zigzag
   while (!Serial.available()) {}
@@ -243,7 +240,7 @@ void ingresarDatosDelSerialPinesZigZag() {
       movimientos[i].dir = dir;
 
 
-    } else if (claveEje == 'b') {  //de esta manera se escoje un caracter para que si lo compare no con ""
+    } else if (claveEje == 'b') {  //ESTE ES PARA EL RADIO
       valorEje = Serial.parseFloat();
       while (!valorEje) {}
 
@@ -305,7 +302,7 @@ void crearPinesZigZag() {
       } else {
         Serial.println("f1");
       }
-      digitalWrite(dirZ, !digitalRead(dirZ));
+      digitalWrite(dirZ, HIGH);
 
       vueltasDeseadaspulAlturaZ = pulsosPorRevolucion * 2;
       unsigned long tiempoInicioZ = micros();
@@ -334,8 +331,23 @@ void crearPinesZigZag() {
           if (digitalRead(pulAlturaY)) vueltasDadasY++;
         }
       }
+      digitalWrite(dirZ, LOW);
 
-      vueltasDeseadaspulAlturaY = (pulsosConReduccion * radioHerramienta / 360);
+
+      vueltasDeseadaspulAlturaZ = pulsosPorRevolucion * 2;
+      tiempoInicioZ = micros();
+      vueltasDadasZ = 0;
+      while (vueltasDadasZ < vueltasDeseadaspulAlturaZ) {
+        unsigned long tiempoActualZ = micros();
+        if (tiempoActualZ - tiempoInicioZ >= intervaloDePulsos && vueltasDadasZ < vueltasDeseadaspulAlturaZ) {
+          tiempoInicioZ += intervaloDePulsos;
+          digitalWrite(pulZ, !digitalRead(pulZ));
+          if (digitalRead(pulZ)) vueltasDadasZ++;
+        }
+      }
+      digitalWrite(pulZ, LOW);
+
+      vueltasDeseadaspulAlturaY = (32);
 
       tiempoInicioY = micros();
       vueltasDadasY = 0;
@@ -380,10 +392,11 @@ void crearPinesZigZag() {
       digitalWrite(dirA, LOW);
     }
     if (claveFor == 'b') {
-      valorFor = movimientos[i].valorEje;
+
+      recibeRadioResorte = movimientos[i].valorEje;
       dir = movimientos[i].dir;
 
-      int finCiclo = valorFor + 1;
+      int finCiclo = recibeRadioResorte + 1;
 
       if (dir == 'D') {
         digitalWrite(dirB, HIGH);
@@ -394,20 +407,150 @@ void crearPinesZigZag() {
         Serial.println("f1");
       }
 
+      double valorM = 0;  //recordar esto solo para radios entre 15 y 40
+      double valorB = 0;  //recordar esto solo para radios entre 15 y 40
+      double pasoPorRevolucion = 5;
+      //TENER EN CUENTA QUE AUNQEU DICE MOTOR Y EN SI EL QUE DEBE MOVERSE ES EL MOTOR B
 
-      vueltasDeseadasPulquiebreB = (pulsosPorRevolucion * valorFor / pasoTornillo);
-      unsigned long tiempoInicioB = micros();
-      unsigned long vueltasDadasB = 0;
-      while (vueltasDadasB < vueltasDeseadasPulquiebreB) {
-        unsigned long tiempoActualB = micros();
-        if (tiempoActualB - tiempoInicioB >= intervaloDePulsos && vueltasDadasB < vueltasDeseadasPulquiebreB) {
-          tiempoInicioB += intervaloDePulsos;
-          digitalWrite(pulB, !digitalRead(pulB));
-          if (digitalRead(pulB)) vueltasDadasB++;
+      if (recibeRadioResorte > 4 && recibeRadioResorte < 15) {
+        valorM = 0.57;  //recordar esto solo para radios entre 15 y 40
+        valorB = 136.53;
+        double distanciaCentroEjeDesdeCeroPieza = (valorM * recibeRadioResorte + valorB) - 130.8;  //recordar esto solo para radios entre 15 y 40
+        double totalRevoluciones = distanciaCentroEjeDesdeCeroPieza / pasoPorRevolucion;
+        double pulsosTotales = pulsosPorRevolucion * totalRevoluciones;
+
+        int vueltasDeseadaspulAltura = pulsosTotales;
+
+        unsigned long tiempoInicio = micros();
+        unsigned long vueltasDadas = 0;
+        while (vueltasDadas < vueltasDeseadaspulAltura) {
+          unsigned long tiempoActual = micros();
+          if (tiempoActual - tiempoInicio >= intervaloDePulsos && vueltasDadas < vueltasDeseadaspulAltura) {
+            tiempoInicio += intervaloDePulsos;
+            digitalWrite(pulB, !digitalRead(pulB));
+            if (digitalRead(pulB)) vueltasDadas++;
+          }
+          digitalWrite(dirB, LOW);
+        }
+        digitalWrite(pulB, LOW);
+      }
+
+      if (recibeRadioResorte > 13 && recibeRadioResorte < 41) {
+        valorM = 0.35;  //recordar esto solo para radios entre 15 y 40
+        valorB = 139.67;
+        double distanciaCentroEjeDesdeCeroPieza = (valorM * recibeRadioResorte + valorB) - 130.8;  //recordar esto solo para radios entre 15 y 40
+        double totalRevoluciones = distanciaCentroEjeDesdeCeroPieza / pasoPorRevolucion;
+        double pulsosTotales = pulsosPorRevolucion * totalRevoluciones;
+
+        vueltasDeseadaspulAlturaY = pulsosTotales;
+
+        unsigned long tiempoInicioY = micros();
+        unsigned long vueltasDadasY = 0;
+        while (vueltasDadasY < vueltasDeseadaspulAlturaY) {
+          unsigned long tiempoActualY = micros();
+          if (tiempoActualY - tiempoInicioY >= intervaloDePulsos && vueltasDadasY < vueltasDeseadaspulAlturaY) {
+            tiempoInicioY += intervaloDePulsos;
+            digitalWrite(pulB, !digitalRead(pulB));
+            if (digitalRead(pulB)) vueltasDadasY++;
+          }
+          digitalWrite(dirB, LOW);
+        }
+        digitalWrite(pulB, LOW);
+      }
+
+      if (recibeRadioResorte > 39 && recibeRadioResorte < 81) {
+        valorM = 0.24;  //recordar esto solo para radios entre 15 y 40
+        valorB = 144.01;
+        double distanciaCentroEjeDesdeCeroPieza = (valorM * recibeRadioResorte + valorB) - 130.8;  //recordar esto solo para radios entre 15 y 40
+        double totalRevoluciones = distanciaCentroEjeDesdeCeroPieza / pasoPorRevolucion;
+        double pulsosTotales = pulsosPorRevolucion * totalRevoluciones;
+
+        vueltasDeseadaspulAlturaY = pulsosTotales;
+
+        unsigned long tiempoInicioY = micros();
+        unsigned long vueltasDadasY = 0;
+        while (vueltasDadasY < vueltasDeseadaspulAlturaY) {
+          unsigned long tiempoActualY = micros();
+          if (tiempoActualY - tiempoInicioY >= intervaloDePulsos && vueltasDadasY < vueltasDeseadaspulAlturaY) {
+            tiempoInicioY += intervaloDePulsos;
+            digitalWrite(pulB, !digitalRead(pulB));
+            if (digitalRead(pulB)) vueltasDadasY++;
+          }
+          digitalWrite(dirB, LOW);
+        }
+        digitalWrite(pulB, LOW);
+      }
+
+      if (recibeRadioResorte > 79 && recibeRadioResorte < 149) {
+        valorM = 0.18;  //recordar esto solo para radios entre 15 y 40
+        valorB = 149;
+        double distanciaCentroEjeDesdeCeroPieza = (valorM * recibeRadioResorte + valorB) - 130.8;  //recordar esto solo para radios entre 15 y 40
+        double totalRevoluciones = distanciaCentroEjeDesdeCeroPieza / pasoPorRevolucion;
+        double pulsosTotales = pulsosPorRevolucion * totalRevoluciones;
+
+        vueltasDeseadaspulAlturaY = pulsosTotales;
+
+        unsigned long tiempoInicioY = micros();
+        unsigned long vueltasDadasY = 0;
+        while (vueltasDadasY < vueltasDeseadaspulAlturaY) {
+          unsigned long tiempoActualY = micros();
+          if (tiempoActualY - tiempoInicioY >= intervaloDePulsos && vueltasDadasY < vueltasDeseadaspulAlturaY) {
+            tiempoInicioY += intervaloDePulsos;
+            digitalWrite(pulB, !digitalRead(pulB));
+            if (digitalRead(pulB)) vueltasDadasY++;
+          }
+          digitalWrite(dirB, LOW);
+        }
+        digitalWrite(pulB, LOW);
+      }
+
+      unsigned long tiempoInicioX = micros();
+      unsigned long vueltasDadasX = 0;
+      double perimetro = recibeRadioResorte * 2 * 3.15;
+
+      vueltasDeseadaspulArrastre = (pulsosPorRevolucion * recibeRadioResorte / milimetrosPorRevolucionArrastre);
+
+      while (vueltasDadasX < vueltasDeseadaspulArrastre) {
+        unsigned long tiempoActualXx = micros();
+        if (tiempoActualXx - tiempoInicioX >= intervaloDePulsos && vueltasDadasX < vueltasDeseadaspulArrastre) {
+          tiempoInicioX += intervaloDePulsos;
+          digitalWrite(pulArrastre, !digitalRead(pulArrastre));
+          if (digitalRead(pulArrastre)) vueltasDadasX++;
+        }
+        digitalWrite(dirX, HIGH);
+      }
+      digitalWrite(pulArrastre, LOW);
+
+
+
+      unsigned long tiempoInicioY = micros();
+      unsigned long vueltasDadasY = 0;
+      vueltasDeseadaspulAlturaY = 115;
+
+      while (vueltasDadasY < vueltasDeseadaspulAlturaY) {
+        unsigned long tiempoActualY = micros();
+        if (tiempoActualY - tiempoInicioY >= intervaloDePulsos && vueltasDadasY < vueltasDeseadaspulAlturaY) {
+          tiempoInicioY += intervaloDePulsos;
+          digitalWrite(pulAlturaY, !digitalRead(pulAlturaY));
+          if (digitalRead(pulAlturaY)) vueltasDadasY++;
         }
       }
-      digitalWrite(pulB, LOW);
-      digitalWrite(dirB, LOW);
+      digitalWrite(pulAlturaY, LOW);
+
+      tiempoInicioX = micros();
+      vueltasDadasX = 0;
+
+      vueltasDeseadaspulArrastre = (pulsosPorRevolucion * 2 * perimetro / milimetrosPorRevolucionArrastre);
+
+      while (vueltasDadasX < vueltasDeseadaspulArrastre) {
+        unsigned long tiempoActualXx = micros();
+        if (tiempoActualXx - tiempoInicioX >= intervaloDePulsos && vueltasDadasX < vueltasDeseadaspulArrastre) {
+          tiempoInicioX += intervaloDePulsos;
+          digitalWrite(pulArrastre, !digitalRead(pulArrastre));
+          if (digitalRead(pulArrastre)) vueltasDadasX++;
+        }
+      }
+      digitalWrite(pulArrastre, LOW);
     }
   }
 }
@@ -539,6 +682,7 @@ void vueltasApriete() {
   double perimetro = recibeRadioResorte * 2 * 3.15;
 
   vueltasDeseadaspulArrastre = (pulsosPorRevolucion * recibeRadioResorte / milimetrosPorRevolucionArrastre);
+  digitalWrite(dirX, HIGH);
 
   while (vueltasDadasX < vueltasDeseadaspulArrastre) {
     unsigned long tiempoActualXx = micros();
@@ -547,10 +691,9 @@ void vueltasApriete() {
       digitalWrite(pulArrastre, !digitalRead(pulArrastre));
       if (digitalRead(pulArrastre)) vueltasDadasX++;
     }
-    digitalWrite(dirX, HIGH);
   }
 
-  vueltasDeseadaspulAlturaY =  6;
+  vueltasDeseadaspulAlturaY = 115;
 
   unsigned long tiempoInicioY = micros();
   unsigned long vueltasDadasY = 0;
@@ -564,8 +707,11 @@ void vueltasApriete() {
   }
   digitalWrite(pulAlturaY, LOW);
 
-  vueltasDeseadaspulArrastre = (pulsosPorRevolucion * 2 * perimetro / milimetrosPorRevolucionArrastre);
+  tiempoInicioX = micros();
+  vueltasDadasX = 0;
 
+  vueltasDeseadaspulArrastre = (pulsosPorRevolucion * 2 * perimetro / milimetrosPorRevolucionArrastre);
+  digitalWrite(dirX, HIGH);
   while (vueltasDadasX < vueltasDeseadaspulArrastre) {
     unsigned long tiempoActualXx = micros();
     if (tiempoActualXx - tiempoInicioX >= intervaloDePulsos && vueltasDadasX < vueltasDeseadaspulArrastre) {
@@ -573,11 +719,8 @@ void vueltasApriete() {
       digitalWrite(pulArrastre, !digitalRead(pulArrastre));
       if (digitalRead(pulArrastre)) vueltasDadasX++;
     }
-    digitalWrite(dirX, HIGH);
   }
-  digitalWrite(pulArrastre, LOW);
 }
-
 
 void darAlturaAlResorte() {
   //MOVIMIENTO DE MOTORES
@@ -606,6 +749,10 @@ void darAlturaAlResorte() {
   double x = (vueltasMotorPorPerimetro * pulsosPorRevolucion);
   double a = (totalVueltasAltura * pulsosPorRevolucion);
 
+  tiempoInicioX = micros();
+  vueltasDadasX = 0;
+  digitalWrite(dirZ, HIGH);
+  digitalWrite(dirX, HIGH);
   while (vueltasDadasX < x || vueltasDadasZ < a) {
     unsigned long tiempoActualX = micros();
     if (tiempoActualX - tiempoInicioX >= intervaloPerimetro && vueltasDadasX < x) {
@@ -619,8 +766,6 @@ void darAlturaAlResorte() {
       digitalWrite(pulZ, !digitalRead(pulZ));
       if (digitalRead(pulZ)) vueltasDadasZ++;
     }
-    digitalWrite(dirZ, HIGH);
-    digitalWrite(dirX, HIGH);
   }
 }
 void figurarResorte() {
@@ -632,6 +777,7 @@ void figurarResorte() {
 
 
     vueltasDeseadaspulArrastre = ((pulsosPorRevolucion * perimetro * (vueltasGeneralesDeseadas - 6)) / milimetrosPorRevolucionArrastre);
+    digitalWrite(dirX, HIGH);
 
     while (vueltasDadasX < vueltasDeseadaspulArrastre) {
       unsigned long tiempoActualXx = micros();
@@ -640,7 +786,6 @@ void figurarResorte() {
         digitalWrite(pulArrastre, !digitalRead(pulArrastre));
         if (digitalRead(pulArrastre)) vueltasDadasX++;
       }
-      digitalWrite(dirX, HIGH);
     }
 
     digitalWrite(pulArrastre, LOW);
@@ -672,7 +817,8 @@ void regresarAlturaResorte() {
 
   double x = (vueltasMotorPorPerimetro * pulsosPorRevolucion);
   double a = (totalVueltasAltura * pulsosPorRevolucion);
-
+  digitalWrite(dirZ, LOW);
+  digitalWrite(dirX, HIGH);
   while (vueltasDadasX < x || vueltasDadasZ < a) {
     unsigned long tiempoActualX = micros();
     if (tiempoActualX - tiempoInicioX >= intervaloPerimetro && vueltasDadasX < x) {
@@ -686,11 +832,8 @@ void regresarAlturaResorte() {
       digitalWrite(pulZ, !digitalRead(pulZ));
       if (digitalRead(pulZ)) vueltasDadasZ++;
     }
-    digitalWrite(dirZ, LOW);
-    digitalWrite(dirX, HIGH);
   }
 }
-
 
 void joystick() {
 
@@ -799,7 +942,6 @@ void ejecutarJoystick() {
     digitalWrite(pulB, LOW);
   }
 }
-
 
 void repetirResorte() {
   int repetirP = repetirProceso - 1;

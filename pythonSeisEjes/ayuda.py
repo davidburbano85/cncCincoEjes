@@ -42,7 +42,11 @@ suficiente para crear PINES
 
  ESTOS SON LOS DATOS SOLICITADOS:
 
-1) Cantidad de Movimientos: es cada 
+1) Igresa cantidad de pines que deseas realizar:
+puedes realizar cuantos pines sena necesarios
+en tu produccion.
+
+1.1)Cantidad de Movimientos: es cada 
 cambio de direccion, que cada eje puede 
 ejecutar.
 Se debe estar pendiente, por que si el número 
@@ -53,8 +57,13 @@ el PIN será incompleto.
 2) Ingresa el eje que deseas mover: recuerda 
 que la maquina cuenta con 5 ejes cada uno 
 independiente
-los ejes principales X, Y, Z, y sus ejes 
-de rotacion  A, B
+los ejes principales 
+X: mueve el material requerido,
+Y: da el angulo necesario al pin,
+Z: de ser necesario z dara altura al pin,
+y sus ejes de rotacion  
+A: gira todo el brazo de la maquina, 
+B: crea el perimetro del diametro del pin.
 
 3) ingresa la direccion: cada eje tiene 2 
 direcciones horario de izquierda a derecha 
@@ -103,11 +112,10 @@ entonces este será el procedimiento:
 
 def ven_ayuda():
     ventana_ayuda=Toplevel()
-    ventana_ayuda.geometry('450x900')
+    ventana_ayuda.geometry('450x700')
     ventana_ayuda.title('six axis machine CNC TT120 helper')
     fondo_principal= tk.Frame(ventana_ayuda, bg='black')
     fondo_principal.place(relheight=1, relwidth=1)
-        
         
     fondo_secundario=tk.Frame(fondo_principal, bg='orange red')
     fondo_secundario.place(relheight=.99, relwidth=.99, relx=.005, rely=.005)
@@ -115,39 +123,38 @@ def ven_ayuda():
     fondo_usar=tk.Frame(fondo_secundario, bg='gray25')
     fondo_usar.place(relheight=.99, relwidth=.99, relx=.005, rely=.005, x=.5)
     
-    info_maquina=tk.Label(fondo_usar,text=info_maquina_text, bg='gray18', fg='orange red' )
+    info_maquina=tk.Label(fondo_usar,text=info_maquina_text, bg='gray18', fg='orange red', font='bold20' )
     info_maquina.place(relheight=1, relwidth=1, anchor='w', rely=.5, relx=0)  
 
     def ayuda(asesoria):
           
-
-            if asesoria=='resorte':
-                ayuda_resorte= tk.Label(fondo_usar, text=ayuda_resortes, bg='gray18', fg='orange red', font='bold12')
-                ayuda_resorte.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5)
-                ventana_ayuda.title('Ayuda en las funciones de resorte')
-               
-            elif asesoria=='pin':
-                ayuda_pin_label= tk.Label(fondo_usar, text=ayuda_pin, bg='gray17', fg='orange red', font='bold12')
-                ayuda_pin_label.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5 )
-                ventana_ayuda.title('Ayuda en las funciones de pines')
-                ayuda_resorte.destroy()
-
-            elif asesoria=='jk':
-                ayuda_joystick_label= tk.Label(fondo_usar, text=ayuda_joystick, bg='gray14', fg='orange red', font='bold12')
-                ayuda_joystick_label.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5)   
-                ventana_ayuda.title('Ayuda en las funciones de modo manual')
-                ayuda_pin_label.destroy()
-                ayuda_resorte.destroy()
+        if asesoria=='resorte':
+            ayuda_resorte= tk.Label(fondo_usar, text=ayuda_resortes, bg='gray18', fg='orange red', font='bold12')
+            ayuda_resorte.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5)
+            ventana_ayuda.title('Ayuda en las funciones de resorte')
             
-            elif asesoria=='E':
-                ayuda_eliminar= tk.Label(fondo_usar, text=mensaje_eliminar, bg='gray14', fg='orange red', font='bold12')
-                ayuda_eliminar.place(relheight=1, anchor='w', relwidth=1, rely=.5, x=.5)   
-                ventana_ayuda.title('Como eliminar y reiniciar')
-                ayuda_pin_label.destroy()
-                ayuda_resorte.destroy()
+        elif asesoria=='pin':
+            ayuda_pin_label= tk.Label(fondo_usar,  bg='gray17', font='bold14')
+            text=tk.Text(ayuda_pin_label, background='gray17', font='bold12', fg='orangered', takefocus=False)
+            text.place(relheight=.7, relwidth=1, relx=0, rely=0.05)
+            text.insert(tk.END, ayuda_pin)
+            ayuda_pin_label.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5 )
+            ventana_ayuda.title('Ayuda en las funciones de pines')
+            scrolAyuda=tk.Scrollbar(fondo_usar)
+            scrolAyuda.place(relx=.96, rely=.07, relheight=.8)
+            text.config(yscrollcommand=scrolAyuda.set)
+            scrolAyuda.config(command=text.yview)
+
+        elif asesoria=='jk':
+            ayuda_joystick_label= tk.Label(fondo_usar, text=ayuda_joystick, bg='gray14', fg='orange red', font='bold12')
+            ayuda_joystick_label.place(relheight=1, relwidth=1, anchor='w', rely=.5, x=.5)   
+            ventana_ayuda.title('Ayuda en las funciones de modo manual')
+        
+        elif asesoria=='E':
+            ayuda_eliminar= tk.Label(fondo_usar, text=mensaje_eliminar, bg='gray14', fg='orange red', font='bold12')
+            ayuda_eliminar.place(relheight=1, anchor='w', relwidth=1, rely=.5, x=.5)   
+            ventana_ayuda.title('Como eliminar y reiniciar')
             
-
-
     boton_ayuda_resorte=tk.Button(ventana_ayuda, text='Resorte', bg='orange red', fg='black',font='bold 12',  command=lambda:ayuda('resorte'))
     boton_ayuda_resorte.place(relheight=.05, relwidth=.24, relx=.0153, rely=.013)
 
@@ -160,5 +167,5 @@ def ven_ayuda():
     boton_eliminar=tk.Button(ventana_ayuda, text='Eliminar', bg='orange red', fg='black',font='bold 12',  command=lambda:ayuda('E'))
     boton_eliminar.place(relheight=.05, relwidth=.24, relx=.745, rely=.013)
 
-
+  
     ventana_ayuda.mainloop()

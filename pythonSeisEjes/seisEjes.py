@@ -53,13 +53,10 @@ columna_botones_especficos.place(relheight=.98, relwidth=.25, relx=.31, rely=.01
 columna_informacion=tk.Frame(fila_botones, bg='gray25')
 columna_informacion.place(relheight=.98, relwidth=.4325, relx=.565, rely=.012)
 
-
-
-
 #/////////////////////LABELS//////////////////////////
 # //////////////////////////////////////////////////
 mensaje='COPYRIGHT 2023 Designed by David Burbano'
-mensaje_Del_Serial=tk.Label(fila_copyright, text=mensaje, background='gray6', font= 'bold15', fg='orange red')
+mensaje_Del_Serial=tk.Label(fila_copyright, text=mensaje, background='gray6', font= 'bold10', fg='orange red')
 mensaje_Del_Serial.place(relheight=.7, relwidth=.98, relx=.012, rely=.2)
 
 mensaje=''' 
@@ -105,13 +102,8 @@ mensaje_serial()
 
 def botones(valor):
     arduino.write(valor.encode())
+    escritura_datos.delete(0, END)
     print(valor)
-
-
-     
-
-
-
 
 #            /////////////FUNCIONES_PARA_ARDUINO//////////////////
               #/////////////////////////////////////////////////
@@ -128,8 +120,6 @@ def esto_es_lo_que_lee_de_arduino():
          arduino_pantalla.pop(0)
     mensaje_serial()
 
-    
-      
 def escribir_a_arduino(escritura):
     escritura=escritura
     arduino.write(escritura.encode())
@@ -162,32 +152,33 @@ CONEXION'''
 boton_Reiniciar=tk.Button(columna_botones_generales, text=mensaje, bg='OrangeRed2', fg='black',font='bold 10',  command=reinicio )
 #medidas y posicionamiento se quitan para que por defecto no 
 # aparezcan sin embargo estan en las funciones de destruir_mensaje y reinicio
+escritura_datos.bind("<Key-t>", lambda event:reinicio())
 
 mensaje='''MAS INFORMACION...'''
 boton_ayuda=tk.Button(columna_informacion, text=mensaje, bg='orange red', fg='black',font='bold 12',  command=ven_ayuda)
 boton_ayuda.place(relheight=.08, relwidth=.3, relx=.65, rely=.83)
 
-
 mensaje='''SIGUIENTE'''
 boton_Inicio=tk.Button(columna_botones_generales, text=mensaje, bg='orange red', fg='black',font='bold 12',  command=esto_es_lo_que_lee_de_arduino)
 boton_Inicio.place(relheight=.15, relwidth=.45, relx=.05, rely=.13)
+escritura_datos.bind("<Key-n>", lambda event:esto_es_lo_que_lee_de_arduino())
 
 mensaje='''INGRESAR
 DATOS'''
 boton_Ingresar_Datos=tk.Button(columna_botones_generales, text=mensaje, bg='OrangeRed2', fg='black',font='bold 12',  command=responder_a_arduino )
 boton_Ingresar_Datos.place(relheight=.15, relwidth=.45, relx=.52, rely=.13)
+escritura_datos.bind("<Return>", lambda event:responder_a_arduino())
 
 mensaje='''ELIMINAR TODOS
 LOS DATOS'''
 boton_Eliminar=tk.Button(columna_botones_generales, text=mensaje, bg='OrangeRed2', fg='black',font='bold 12',  command=destruir_mensaje )
 boton_Eliminar.place(relheight=.15, relwidth=.45, relx=.52, rely=.33)
-
-
+escritura_datos.bind("<Key-l>", lambda event:destruir_mensaje())
 
 mensaje='''CERRAR PROGRAMA Y SERIAL'''
 boton_Cerrar=tk.Button(columna_botones_generales, text=mensaje, bg='OrangeRed2', fg='black',font='bold 10',  command=cerrar_programa )
 boton_Cerrar.place(relheight=.15, relwidth=.97, relx=.018, rely=.53)
-
+escritura_datos.bind("<Key-c>", lambda event:cerrar_programa())
 
             #/////////////////////////////BOTONES ESPECIFICOS///////////////////////
 
@@ -221,6 +212,13 @@ EMPUJE DE MATERIAL'''
 boton_Destruir=tk.Button(columna_botones_especficos, text=mensaje, bg='OrangeRed2', fg='black',font='bold 12',  command=lambda:botones('x') )
 boton_Destruir.place(relheight=.15, relwidth=.8, relx=.1, rely=.6)
 
+#     /////////////////////////BINDS/////////////////////////////////
 
+escritura_datos.bind("<Key-d>", lambda event:botones("d"))
+escritura_datos.bind("<Key-a>", lambda event:botones("a"))
+escritura_datos.bind("<Key-b>", lambda event:botones("b"))
+escritura_datos.bind("<Key-z>", lambda event:botones("z"))
+escritura_datos.bind("<Key-x>", lambda event:botones("x"))
+escritura_datos.bind("<Key-y>", lambda event:botones("y"))
 
 ventana.mainloop()

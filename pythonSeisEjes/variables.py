@@ -1,6 +1,7 @@
 opciones_locales = {
     'o':  'Por favor presiona 1 para iniciar',
-    'a1': 'Por favor presiona: 1 para crear resortes, 2 para pines y 3 joystick',
+    'a1': '''Por favor presiona: 
+    1 para crear resortes,    2 para pines  y    3 joystick''',
     'a2': 'Solicitud incorrecta',
     'b1': 'Por favor ingresa el RADIO del resorte',
     'b2': 'Ahora por favor ingresa el PASO del resorte',
@@ -12,7 +13,8 @@ opciones_locales = {
     'e2': '''Por favor ingresa el tipo de movimiento 
     x: es para crear un segmento del zig-zag debera añadir la distancia en mm para el segmento
     Y: son los grados a los que quedaran entre segmentos por lo general 80°    
-    a: es para rotar la maquina en general y creara un pin en 360°''',
+    a: es para rotar la maquina en general y creara un pin en 3D
+    b: se creara el medio diametro del pin''',
     'e3': 'Por favor escribe la direccion de el eje Der: "D", Izq: "I" ',
     'e4': 'ese eje no existe',
     'e5': 'por favor ingresa el diametro del pin',
@@ -26,7 +28,6 @@ opciones_locales = {
 
 claves_opciones = list(opciones_locales.keys())
 valores_opciones = ''
-
 
 def diccionario_variables(clavearduino):
     for clave in claves_opciones:
